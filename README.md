@@ -1,4 +1,4 @@
-# Render files javascript action
+# Render yml/yaml files action
 
 This action retrieves secrets and variables from the GitHub context and replaces with values in files (yml/yaml extensions) stated in target-folder parameter if it finds a string with *ENV_* prefix that is *ENV_<variable/secret name>*.
 
