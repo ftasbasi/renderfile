@@ -1,0 +1,18 @@
+name: 'Update Environment Files'
+description: 'A GitHub Action to update environment files based on secrets and variables.'
+branding:
+  icon: 'refresh-cw'  # Replace this with an appropriate icon from https://primer.style/octicons/
+  color: 'gray-dark'  # Choose a color that represents your action
+
+inputs:
+  secrets_context:
+    description: 'Secrets context JSON'
+    required: false
+
+  vars_context:
+    description: 'Variables context JSON'
+    required: false
+
+runs:
+  using: 'python'
+  main: '.github/scripts/update_env_files.py'
