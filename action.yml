@@ -1,26 +1,15 @@
-name: 'Update Environment Files'
-description: 'A GitHub Action to update environment files based on secrets and variables.'
-branding:
-  icon: 'refresh-cw'  # Replace this with an appropriate icon from https://primer.style/octicons/
-  color: 'gray-dark'  # Choose a color that represents your action
-
+name: 'Render File'
+description: 'Render files in the folder'
 inputs:
-  secrets_context:
-    description: 'Secrets context JSON'
-    required: false
-
-  vars_context:
-    description: 'Variables context JSON'
-    required: false
-
-  target_folder:
-    description: 'Folder to render all files in'
+  target-folder:
+    description: 'Target folder to change files in it.'
     required: true
-
+  secrets-context:
+    description: 'Secret context of the current workflow.'
+    required: true
+  variables-context:
+    description: 'Variable context of the current workflow.'
+    required: true
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.secrets_context }}
-    - ${{ inputs.vars_context }}
-    - ${{ inputs.target_folder }}
+  using: 'node20'
+  main: 'index.js'
