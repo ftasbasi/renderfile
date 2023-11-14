@@ -31,3 +31,36 @@ with:
 env:
   VAR1: "sample value" # for changing ENV_VAR1 in files
 ```
+
+
+Before:
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: ENV_ENVIRONMENT_NAME
+  name: postgresql-ENV_ENVIRONMENT_NAME
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  resources:
+    requests:
+      storage: ENV_STORAGE_SIZE
+```
+
+After:
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: test-env
+  name: postgresql-test-env
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 20Gi
+```
