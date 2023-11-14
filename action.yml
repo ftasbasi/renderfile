@@ -13,6 +13,10 @@ inputs:
     description: 'Variables context JSON'
     required: false
 
+  target_folder:
+    description: 'Folder to render all files in'
+    required: true
+
 runs:
   using: 'python'
   main: '.github/scripts/update_env_files.py'
