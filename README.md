@@ -1,6 +1,6 @@
 # Render files javascript action
 
-This action retrieves secrets and variables from the GitHub context and replaces with values in files stated in target-folder parameter if it finds a string with *ENV_* prefix that is *ENV_<variable/secret name>*.
+This action retrieves secrets and variables from the GitHub context and replaces with values in files (yml/yaml extensions) stated in target-folder parameter if it finds a string with *ENV_* prefix that is *ENV_<variable/secret name>*.
 
 ## Inputs
 
@@ -23,7 +23,7 @@ Replaced files on the fly.
 ## Example usage
 
 ```yaml
-uses: ftasbasi/renderfile@v1.6
+uses: ftasbasi/renderfile@v1.8
 with:
   secrets-context: ${{ toJson(secrets) }}
   variables-context: ${{ toJson(vars) }}
