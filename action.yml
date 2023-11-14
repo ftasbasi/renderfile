@@ -1,5 +1,6 @@
 name: 'Render File'
-description: 'Render files in the folder'
+description: 'Render files in the folder with yml/yaml extensions'
+author: 'Furkan Tasbasi'
 inputs:
   target-folder:
     description: 'Target folder to change files in it.'
@@ -10,6 +11,9 @@ inputs:
   variables-context:
     description: 'Variable context of the current workflow.'
     required: false
+branding:
+  icon: check-square
+  color: purple
 runs:
   using: 'node20'
   main: 'index.js'
