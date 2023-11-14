@@ -32,7 +32,8 @@ env:
   VAR1: "sample value" # for changing ENV_VAR1 in files
 ```
 
-Let's say we provide ENVIRONMENT_NAME=test-env and STORAGE_SIZE=20Gi as env parameter or a GitHub environment variable directly, here is the sample output:
+    Let's say we provide ENVIRONMENT_NAME=test-env and STORAGE_SIZE=20Gi as env parameter or a GitHub environment variable directly, here is the sample output:
+
 Before:
 ```
 apiVersion: v1
