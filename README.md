@@ -27,5 +27,7 @@ uses: ftasbasi/renderfile@v1.6
 with:
   secrets-context: ${{ toJson(secrets) }}
   variables-context: ${{ toJson(vars) }}
-  target-folder: manifests
+  target-folder: foldername
+env:
+  VAR1: "sample value"  # for changing ENV_VAR1 in files
 ```

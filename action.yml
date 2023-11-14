@@ -6,10 +6,10 @@ inputs:
     required: true
   secrets-context:
     description: 'Secret context of the current workflow.'
-    required: true
+    required: false
   variables-context:
     description: 'Variable context of the current workflow.'
-    required: true
+    required: false
 runs:
   using: 'node20'
   main: 'index.js'
