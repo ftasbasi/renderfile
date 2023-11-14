@@ -29,5 +29,5 @@ with:
   variables-context: ${{ toJson(vars) }}
   target-folder: foldername
 env:
-  VAR1: "sample value"  # for changing ENV_VAR1 in files
+  VAR1: "sample value" # for changing ENV_VAR1 in files
 ```
