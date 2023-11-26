@@ -23,7 +23,7 @@ Replaced files on the fly.
 ## Example usage
 
 ```yaml
-uses: ftasbasi/renderfile@v1.8
+uses: ftasbasi/renderfile@v1.9
 with:
   secrets-context: ${{ toJson(secrets) }}
   variables-context: ${{ toJson(vars) }}
