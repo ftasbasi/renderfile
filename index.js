@@ -1,16 +1,27 @@
 const fs = require('fs');
 const path = require('path');
 const core = require('@actions/core');
+
 try {
-  const targetFolder = core.getInput('target-folder');
+  const target = core.getInput('target');
+  const processFile = core.getInput('file') === 'true' || false; // Set to false by default
   const secretsContext = JSON.parse(core.getInput('secrets-context'));
   const varsContext = JSON.parse(core.getInput('variables-context'));
 
-  const targetFiles = fs.readdirSync(targetFolder).filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
+  if (processFile) {
+    // Process a single file specified in 'target'
+    processSingleFile(target, secretsContext, varsContext);
+  } else {
+    // Process all files in the folder specified in 'target'
+    processAllFiles(target, secretsContext, varsContext);
+  }
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
 
-  targetFiles.forEach(targetFile => {
-    const filePath = path.join(targetFolder, targetFile);
-
+function processSingleFile(filePath, secretsContext, varsContext) {
+  try {
     let data = fs.readFileSync(filePath, 'utf8');
 
     // Replace the template variables with their values if exist in secrets
@@ -35,10 +46,20 @@ try {
 
     // Overwrite the result to the file
     fs.writeFileSync(filePath, data);
+
+    console.log(`File processed successfully: ${filePath}`);
+  } catch (error) {
+    console.error(`Error processing file ${filePath}: ${error.message}`);
+  }
+}
+
+function processAllFiles(folderPath, secretsContext, varsContext) {
+  const targetFiles = fs.readdirSync(folderPath).filter(file => file.endsWith('.yml') || file.endsWith('.yaml'));
+
+  targetFiles.forEach(targetFile => {
+    const filePath = path.join(folderPath, targetFile);
+    processSingleFile(filePath, secretsContext, varsContext);
   });
 
-  // Now you can use 'targetFolder', 'secretsContext', and 'varsContext' in your script logic
-} catch (error) {
-  console.error(error.message);
-  process.exit(1);
+  console.log(`All files in ${folderPath} processed successfully.`);
 }
