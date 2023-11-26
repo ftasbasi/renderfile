@@ -1,12 +1,12 @@
 # Render yml/yaml files action
 
-This action retrieves secrets and variables from the GitHub context and replaces with values in files (yml/yaml extensions) stated in target-folder parameter if it finds a string with *ENV_* prefix that is *ENV_<variable/secret name>*.
+This action retrieves secrets and variables from the GitHub context and replaces with values in file(s) (yml/yaml extensions) stated in target parameter if it finds a string with *ENV_* prefix that is *ENV_<variable/secret name>*. If file parameter is given true then it processes single file provided in target, if not it processes files in folder given in target parameter. 
 
 ## Inputs
 
-### `target-folder`
+### `target`
 
-**Required** The name of folder contains files to be edited which has *ENV_* words in it.
+**Required** The name of folder/file contains file(s) to be edited which has *ENV_* words in it.
 
 ### `secrets-context`
 
@@ -27,7 +27,8 @@ uses: ftasbasi/renderfile@v1.8
 with:
   secrets-context: ${{ toJson(secrets) }}
   variables-context: ${{ toJson(vars) }}
-  target-folder: foldername
+  target: foldername/filename
+  file: true # default false
 env:
   VAR1: "sample value" # for changing ENV_VAR1 in files
 ```

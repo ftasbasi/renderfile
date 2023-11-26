@@ -2,8 +2,11 @@ name: 'Render File'
 description: 'Render files in the folder with yml/yaml extensions'
 author: 'Furkan Tasbasi'
 inputs:
-  target-folder:
-    description: 'Target folder to change files in it.'
+  file:
+    description: 'Target is file or not. Default false (folder)'
+    required: true
+  target:
+    description: 'Target folder/file to change file(s) in it.'
     required: true
   secrets-context:
     description: 'Secret context of the current workflow.'
