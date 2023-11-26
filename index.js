@@ -4,7 +4,7 @@ const core = require('@actions/core');
 
 try {
   const target = core.getInput('target');
-  const processFile = core.getInput('file') === 'true'; // Check if 'file' is set to 'true'
+  const processFile = core.getInput('file') === 'true' || false; // Set to false by default
   const secretsContext = JSON.parse(core.getInput('secrets-context'));
   const varsContext = JSON.parse(core.getInput('variables-context'));
 
