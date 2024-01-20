@@ -43,12 +43,16 @@ function calculateIndentation(data, key) {
   if (lineWithKey) {
     const indentationMatch = lineWithKey.match(/^(\s*)/);
     if (indentationMatch) {
-      return indentationMatch[1]; // return the captured indentation
+      const existingIndentation = indentationMatch[1];
+      // Increase the indentation by one if the value is multiline
+      const additionalIndentation = existingIndentation.includes(':') ? '  ' : '';
+      return existingIndentation + additionalIndentation;
     }
   }
 
   return ''; // default to empty string if no indentation is found
 }
+
 
 function processSingleFile(filePath, secretsContext, varsContext) {
   try {
