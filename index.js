@@ -20,32 +20,33 @@ try {
   process.exit(1);
 }
 
+function replaceTemplateVariables(data, context) {
+  for (const [key, value] of Object.entries(context)) {
+    const regex = new RegExp(`ENV_${key}`, 'g');
+    // Replace newline characters in the value
+    const sanitizedValue = value.replace(/\n/g, '\\n');
+    data = data.replace(regex, sanitizedValue);
+  }
+  return data;
+}
+
 function processSingleFile(filePath, secretsContext, varsContext) {
   try {
     let data = fs.readFileSync(filePath, 'utf8');
 
-    // Replace the template variables with their values if exist in secrets
-    for (const [key, value] of Object.entries(secretsContext)) {
-      const regex = new RegExp(`ENV_${key}`, 'g');
-      data = data.replace(regex, value);
-    }
+    // Replace template variables with their values in secrets context
+    data = replaceTemplateVariables(data, secretsContext);
 
-    // Replace the template variables with their values if exist in variables from vars context
+    // Replace template variables with their values in variables from vars context
     if (varsContext !== null) {
-      for (const [key, value] of Object.entries(varsContext)) {
-        const regex = new RegExp(`ENV_${key}`, 'g');
-        data = data.replace(regex, value);
-      }
+      data = replaceTemplateVariables(data, varsContext);
     }
 
-    // Replace the template variables with their values if exist in variables from env context
-    for (const [key, value] of Object.entries(process.env)) {
-      const regex = new RegExp(`ENV_${key}`, 'g');
-      data = data.replace(regex, value);
-    }
+    // Replace template variables with their values in variables from env context
+    data = replaceTemplateVariables(data, process.env);
 
     // Overwrite the result to the file
-    fs.writeFileSync(filePath, data);
+    fs.writeFileSync(filePath, data, 'utf8');
 
     console.log(`File processed successfully: ${filePath}`);
   } catch (error) {
