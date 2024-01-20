@@ -24,14 +24,21 @@ function replaceTemplateVariables(data, context) {
   for (const [key, value] of Object.entries(context)) {
     const regex = new RegExp(`ENV_${key}`, 'g');
 
-    // Preserve newline characters with the '|' YAML syntax and apply indentation
+    // Preserve newline characters with the '|' YAML syntax and apply dynamic indentation
+    const existingIndentation = calculateIndentation(data, key);
     const sanitizedValue = value.includes('\n')
-      ? `|-\n${value.split('\n').map(line => `  ${line}`).join('\n')}`
+      ? `|-\n${value.split('\n').map(line => `${existingIndentation}${line}`).join('\n')}`
       : value;
 
     data = data.replace(regex, sanitizedValue);
   }
   return data;
+}
+
+function calculateIndentation(data, key) {
+  const lines = data.split('\n');
+  const lineWithKey = lines.find(line => line.includes(`ENV_${key}`));
+  return lineWithKey.match(/^\s*/)[0];
 }
 
 function processSingleFile(filePath, secretsContext, varsContext) {
