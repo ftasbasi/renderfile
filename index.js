@@ -23,10 +23,8 @@ try {
 function replaceTemplateVariables(data, context) {
   for (const [key, value] of Object.entries(context)) {
     const regex = new RegExp(`ENV_${key}`, 'g');
-    // Create a pattern that captures the existing indentation
-    const pattern = new RegExp(`(^\\s*)ENV_${key}`, 'gm');
-    // Replace newline characters in the value without affecting indentation
-    const sanitizedValue = value.replace(/\n/g, (match) => '\n' + match.match(pattern)[1]);
+    // Preserve newline characters with the '|' YAML syntax
+    const sanitizedValue = `|\n${value}\n`;
     data = data.replace(regex, sanitizedValue);
   }
   return data;
