@@ -24,16 +24,17 @@ function replaceTemplateVariables(data, context) {
   for (const [key, value] of Object.entries(context)) {
     const regex = new RegExp(`ENV_${key}`, 'g');
 
-    // Preserve newline characters with the '|' YAML syntax and apply dynamic indentation
-    const existingIndentation = calculateIndentation(data, key);
-    const sanitizedValue = value.includes('\n')
-      ? `|-\n${value.split('\n').map(line => `${existingIndentation}${line}`).join('\n')}`
-      : value;
+    // Normalize newline characters to '\n' and preserve the '|' YAML syntax
+    const normalizedValue = value.replace(/\r\n/g, '\n');
+    const sanitizedValue = normalizedValue.includes('\n')
+      ? `|-\n${normalizedValue.split('\n').map(line => `${calculateIndentation(data, key)}${line}`).join('\n')}`
+      : normalizedValue;
 
     data = data.replace(regex, sanitizedValue);
   }
   return data;
 }
+
 
 function calculateIndentation(data, key) {
   const lines = data.split('\n');
