@@ -39,7 +39,15 @@ function replaceTemplateVariables(data, context) {
 function calculateIndentation(data, key) {
   const lines = data.split('\n');
   const lineWithKey = lines.find(line => line.includes(`ENV_${key}`));
-  return lineWithKey.match(/^\s*/)[0];
+
+  if (lineWithKey) {
+    const indentationMatch = lineWithKey.match(/^(\s*)/);
+    if (indentationMatch) {
+      return indentationMatch[1]; // return the captured indentation
+    }
+  }
+
+  return ''; // default to empty string if no indentation is found
 }
 
 function processSingleFile(filePath, secretsContext, varsContext) {
