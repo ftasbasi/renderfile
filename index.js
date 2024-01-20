@@ -24,8 +24,10 @@ function replaceTemplateVariables(data, context) {
   for (const [key, value] of Object.entries(context)) {
     const regex = new RegExp(`ENV_${key}`, 'g');
 
-    // Preserve newline characters with the '|' YAML syntax
-    const sanitizedValue = `|\n${value.split('\n').map(line => `  ${line}`).join('\n')}\n`;
+    // Preserve newline characters with the '|' YAML syntax and apply indentation
+    const sanitizedValue = value.includes('\n')
+      ? `|-\n${value.split('\n').map(line => `  ${line}`).join('\n')}`
+      : value;
 
     data = data.replace(regex, sanitizedValue);
   }
