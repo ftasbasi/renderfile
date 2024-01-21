@@ -27,7 +27,7 @@ function replaceTemplateVariables(data, context) {
     // Normalize newline characters to '\n' and preserve the '|' YAML syntax
     const normalizedValue = value.replace(/\r\n/g, '\n');
     const sanitizedValue = normalizedValue.includes('\n')
-      ? `|-\n${normalizedValue.split('\n').map(line => `${calculateIndentation(data, key)}${line}`).join('\n')}`
+      ? `|-\n${normalizedValue.split('\n').map(line => `  ${calculateIndentation(data, key)}${line}`).join('\n')}`
       : normalizedValue;
 
     data = data.replace(regex, sanitizedValue);
