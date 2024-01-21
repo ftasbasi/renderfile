@@ -20,32 +20,92 @@ try {
   process.exit(1);
 }
 
+function replaceTemplateVariables(dataRaw, contextObj) {
+  // Read data from file
+  let data = dataRaw;
+
+  try {
+
+    const regex = /ENV_\w+/g;
+
+    // Find all matches of "ENV_" followed by a key in the data string
+    const matches = data.match(regex);
+
+    // If there are matches, iterate over them
+    if (matches) {
+      for (const match of matches) {
+        const key = match.substring(4); // Extract the key from the match
+        const contextValue = contextObj[key]; // Get the corresponding value from the context
+
+        if (contextValue !== undefined) {
+          const normalizedValue = normalizeValue(contextValue);
+          const sanitizedValue = getSanitizedValue(data, key, normalizedValue);
+
+          // Replace the key in the data with the sanitized value
+          data = data.replace(new RegExp(match, ''), sanitizedValue);
+        }
+      }
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error parsing context file:', error);
+    return null;
+  }
+}
+
+function normalizeValue(value) {
+  // Normalize newline characters to '\n'
+  return value.replace(/\r\n/g, '\n');
+}
+
+function getSanitizedValue(data, key, normalizedValue) {
+  return normalizedValue.includes('\n')
+    ? `|-\n${normalizedValue.split('\n').map(line => {
+        // Calculate the indentation dynamically based on the existing indentation
+        const existingIndentation = calculateIndentation(data, `ENV_${key}`);
+        return `  ${existingIndentation}${line}`;
+      }).join('\n')}`
+    : normalizedValue;
+}
+
+
+
+function calculateIndentation(data, key) {
+  const lines = data.split('\n');
+  const lineWithKey = lines.find(line => line.includes(key));
+
+  if (lineWithKey) {
+    const indentationMatch = lineWithKey.match(/^(\s*)/);
+    if (indentationMatch) {
+      const existingIndentation = indentationMatch[1];
+      // Increase the indentation by one if the value is multiline
+      const additionalIndentation = existingIndentation.includes(':') ? '  ' : '';
+      return existingIndentation + additionalIndentation;
+    }
+  }
+
+  return ''; // default to an empty string if no indentation is found
+}
+
+
 function processSingleFile(filePath, secretsContext, varsContext) {
   try {
     let data = fs.readFileSync(filePath, 'utf8');
 
-    // Replace the template variables with their values if exist in secrets
-    for (const [key, value] of Object.entries(secretsContext)) {
-      const regex = new RegExp(`ENV_${key}`, 'g');
-      data = data.replace(regex, value);
-    }
+    // Replace template variables with their values in secrets context
+    data = replaceTemplateVariables(data, secretsContext);
 
-    // Replace the template variables with their values if exist in variables from vars context
+    // Replace template variables with their values in variables from vars context
     if (varsContext !== null) {
-      for (const [key, value] of Object.entries(varsContext)) {
-        const regex = new RegExp(`ENV_${key}`, 'g');
-        data = data.replace(regex, value);
-      }
+      data = replaceTemplateVariables(data, varsContext);
     }
 
-    // Replace the template variables with their values if exist in variables from env context
-    for (const [key, value] of Object.entries(process.env)) {
-      const regex = new RegExp(`ENV_${key}`, 'g');
-      data = data.replace(regex, value);
-    }
+    // Replace template variables with their values in variables from env context
+    data = replaceTemplateVariables(data, process.env);
 
     // Overwrite the result to the file
-    fs.writeFileSync(filePath, data);
+    fs.writeFileSync(filePath, data, 'utf8');
 
     console.log(`File processed successfully: ${filePath}`);
   } catch (error) {
