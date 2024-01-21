@@ -20,30 +20,60 @@ try {
   process.exit(1);
 }
 
-function replaceTemplateVariables(data, context) {
-  for (const [key, value] of Object.entries(context)) {
-    const regex = new RegExp(`ENV_${key}`, 'g');
+function replaceTemplateVariables(dataRaw, contextObj) {
+  // Read data from file
+  let data = dataRaw;
 
-    // Normalize newline characters to '\n' and preserve the '|' YAML syntax
-    const normalizedValue = value.replace(/\r\n/g, '\n');
-    const sanitizedValue = normalizedValue.includes('\n')
-      ? `|-\n${normalizedValue.split('\n').map(line => {
-          // Calculate the indentation dynamically based on the existing indentation
-          const existingIndentation = calculateIndentation(data, key);
-          return `  ${existingIndentation}${line}`;
-        }).join('\n')}`
-      : normalizedValue;
+  try {
 
-    data = data.replace(regex, sanitizedValue);
+    const regex = /ENV_\w+/g;
+
+    // Find all matches of "ENV_" followed by a key in the data string
+    const matches = data.match(regex);
+
+    // If there are matches, iterate over them
+    if (matches) {
+      for (const match of matches) {
+        const key = match.substring(4); // Extract the key from the match
+        const contextValue = contextObj[key]; // Get the corresponding value from the context
+
+        if (contextValue !== undefined) {
+          const normalizedValue = normalizeValue(contextValue);
+          const sanitizedValue = getSanitizedValue(data, key, normalizedValue);
+
+          // Replace the key in the data with the sanitized value
+          data = data.replace(new RegExp(match, ''), sanitizedValue);
+        }
+      }
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error parsing context file:', error);
+    return null;
   }
-  return data;
+}
+
+function normalizeValue(value) {
+  // Normalize newline characters to '\n'
+  return value.replace(/\r\n/g, '\n');
+}
+
+function getSanitizedValue(data, key, normalizedValue) {
+  return normalizedValue.includes('\n')
+    ? `|-\n${normalizedValue.split('\n').map(line => {
+        // Calculate the indentation dynamically based on the existing indentation
+        const existingIndentation = calculateIndentation(data, `ENV_${key}`);
+        return `  ${existingIndentation}${line}`;
+      }).join('\n')}`
+    : normalizedValue;
 }
 
 
 
 function calculateIndentation(data, key) {
   const lines = data.split('\n');
-  const lineWithKey = lines.find(line => line.includes(`ENV_${key}`));
+  const lineWithKey = lines.find(line => line.includes(key));
 
   if (lineWithKey) {
     const indentationMatch = lineWithKey.match(/^(\s*)/);
@@ -55,7 +85,7 @@ function calculateIndentation(data, key) {
     }
   }
 
-  return ''; // default to empty string if no indentation is found
+  return ''; // default to an empty string if no indentation is found
 }
 
 
