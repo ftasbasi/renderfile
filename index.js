@@ -27,13 +27,18 @@ function replaceTemplateVariables(data, context) {
     // Normalize newline characters to '\n' and preserve the '|' YAML syntax
     const normalizedValue = value.replace(/\r\n/g, '\n');
     const sanitizedValue = normalizedValue.includes('\n')
-      ? `|-\n${normalizedValue.split('\n').map(line => `  ${calculateIndentation(data, key)}${line}`).join('\n')}`
+      ? `|-\n${normalizedValue.split('\n').map(line => {
+          // Calculate the indentation dynamically based on the existing indentation
+          const existingIndentation = calculateIndentation(data, key);
+          return `  ${existingIndentation}${line}`;
+        }).join('\n')}`
       : normalizedValue;
 
     data = data.replace(regex, sanitizedValue);
   }
   return data;
 }
+
 
 
 function calculateIndentation(data, key) {
