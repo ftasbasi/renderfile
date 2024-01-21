@@ -25,15 +25,17 @@ function replaceTemplateVariables(dataRaw, contextObj) {
   let data = dataRaw;
 
   try {
-
     const regex = /ENV_\w+/g;
 
     // Find all matches of "ENV_" followed by a key in the data string
     const matches = data.match(regex);
 
-    // If there are matches, iterate over them
+    // If there are matches, sort them in descending order
     if (matches) {
-      for (const match of matches) {
+      const sortedMatches = matches.sort((a, b) => b.localeCompare(a));
+
+      // Iterate over the sorted matches
+      for (const match of sortedMatches) {
         const key = match.substring(4); // Extract the key from the match
         const contextValue = contextObj[key]; // Get the corresponding value from the context
 
@@ -53,6 +55,7 @@ function replaceTemplateVariables(dataRaw, contextObj) {
     return null;
   }
 }
+
 
 function normalizeValue(value) {
   // Normalize newline characters to '\n'
